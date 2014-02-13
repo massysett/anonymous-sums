@@ -14,7 +14,7 @@ dataDeclaration i =
   ++ constructors
   ++ " deriving (Eq, Ord, Read, Show, Generic"
   ++ (if i <= 7 then ", Typeable)" else ")")
-  ++ ";\n\n"
+  ++ "\n\n"
   where
     constructors = list " | " . map mkConst
       $ ls
@@ -40,7 +40,7 @@ partitionDef :: Int -> String
 partitionDef i = sig ++ decl
   where
     sig = fName ++ " :: ["
-      ++ sType i ++ "] -> " ++ tuple ++ ";\n"
+      ++ sType i ++ "] -> " ++ tuple ++ "\n"
     tuple = "(" ++ (list ", " . map lsSig $ ls)
       ++ ")"
     ls = letters i
@@ -51,18 +51,18 @@ partitionDef i = sig ++ decl
       where
         tup = "(" ++ (list ", " . replicate i $ "[]")
           ++ ")"
-    whr = "where { " ++ cse ++ "};\n\n"
-    cse = "fn it " ++ tup ++ " = case it of { " ++ cases ++ "};"
+    whr = "  where\n" ++ cse
+    cse = "    fn it " ++ tup ++ " = case it of\n" ++ cases ++ "\n"
       where
         tup = "("
           ++ ( list ", " . map (\l -> l:'s':[])
                 $ ls)
           ++ ")"
         cases = concatMap mkCase ls
-        mkCase l = 'S' : show i ++ l : ' ' : l
+        mkCase l = "      S" ++ show i ++ l : ' ' : l
           : " -> ("
           ++ (list ", " . map mkLetter $ ls)
-          ++ ");\n"
+          ++ ")\n"
           where
             mkLetter ltr
               | ltr == l = l : ':' : l : 's' : []
@@ -72,26 +72,26 @@ caseDef :: Int -> String
 caseDef i = sig ++ decl
   where
     sig = fName ++ " :: " ++ fns
-      ++ " -> " ++ sType i ++ " -> z;\n"
+      ++ " -> " ++ sType i ++ " -> z\n"
     fns = list " -> " . map mkFn $ ls
     ls = letters i
     mkFn l = '(' : l : " -> " ++ "z)"
     fName = "caseS" ++ show i
 
     decl = fName ++ " " ++ (list " " hofNames) ++ " " ++ sName
-      ++ " = case " ++ sName ++ " of {\n" ++ cases ++ "};\n\n"
+      ++ " = case " ++ sName ++ " of\n" ++ cases ++ "\n"
     sName = 's' : show i
     hofNames = map (\s -> 'f':s:[]) ls
     cases = concatMap mkCase ls
-    mkCase l = 'S' : show i ++ l : ' ' : l
-      : " -> " ++ ('f' : l : ' ' : l : ";\n")
+    mkCase l = "  S" ++ show i ++ l : ' ' : l
+      : " -> " ++ ('f' : l : ' ' : l : "\n")
 
 mapDef :: Int -> String
 mapDef i = sig ++ decl
   where
     fName = "mapS" ++ show i
     sig = fName ++ " :: " ++ list " -> "
-      (fns ++ sType i : resType : []) ++ ";\n"
+      (fns ++ sType i : resType : []) ++ "\n"
     resType = 'S' : show i ++ (' ' : list " " ls')
     ls = letters i
     ls' = map (\l -> l : '1' : []) ls
@@ -100,7 +100,7 @@ mapDef i = sig ++ decl
 
     decl = fName ++ " " ++ list " " (map (:[]) ls) ++ " = "
       ++ "caseS" ++ show i ++ " " ++ (list " " . map mkMapper $ ls)
-      ++ ";\n\n"
+      ++ "\n\n"
     mkMapper l = "(S" ++ show i ++ l : " . " ++ l : ")"
 
 mapDefA :: Int -> String
@@ -109,8 +109,8 @@ mapDefA i = sig ++ decl
     fName = "mapS" ++ show i ++ "f"
     sig = fName ++ " :: "
       ++ "Functor ftr =>\n"
-      ++ list " -> "
-      (fns ++ sType i : resType : []) ++ ";\n"
+      ++ "  " ++ list " -> "
+      (fns ++ sType i : resType : []) ++ "\n"
     resType = "ftr (" ++ 'S' : show i ++ (' ' : list " " ls')
       ++ ")"
     ls = letters i
@@ -120,7 +120,7 @@ mapDefA i = sig ++ decl
 
     decl = fName ++ " " ++ list " " (map (:[]) ls) ++ " = "
       ++ "caseS" ++ show i ++ " " ++ (list " " . map mkMapper $ ls)
-      ++ ";\n\n"
+      ++ "\n\n"
     mkMapper l = "(fmap S" ++ show i ++ l : " . " ++ l : ")"
 
 makeModule
@@ -133,7 +133,7 @@ makeModule
 makeModule n i = 
   pragmas ++ notice ++ leadHaddocks ++ modName
   ++ imports ++ datas ++ parts
-  ++ cases ++ maps ++ mapFs ++ done
+  ++ cases ++ maps ++ mapFs
   where
 
     pragmas = "{-# LANGUAGE DeriveDataTypeable, DeriveGeneric #-}\n\n"
@@ -154,11 +154,11 @@ makeModule n i =
       , ""
       ]
 
-    modName = "module " ++ n ++ " where {\n"
+    modName = "module " ++ n ++ " where\n\n"
 
     imports = unlines
-      [ "import Data.Typeable;"
-      , "import GHC.Generics;"
+      [ "import Data.Typeable"
+      , "import GHC.Generics"
       , ""
       ]
 
@@ -176,8 +176,6 @@ makeModule n i =
 
     mapFs = "-- * Mapping in a Functor\n\n"
       ++ concatMap mapDefA vs
-
-    done = "}\n"
 
     vs = [2..i]
 
