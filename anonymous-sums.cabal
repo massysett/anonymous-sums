@@ -2,7 +2,7 @@
 -- documentation, see http://haskell.org/cabal/users-guide/
 
 name:                anonymous-sums
-version:             0.2.2.0
+version:             0.2.3.0
 synopsis:            Anonymous sum types
 description:
   Anonymous sum types.  Like tuples, but for sum types rather than
