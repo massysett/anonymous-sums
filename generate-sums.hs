@@ -158,7 +158,7 @@ makeModule n i =
 
     imports = unlines
       [ "import Data.Typeable"
-      , "import GHC.Generics"
+      , "import GHC.Generics hiding (S1)"
       , ""
       ]
 

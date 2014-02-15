@@ -13,7 +13,7 @@
 module Data.Sums where
 
 import Data.Typeable
-import GHC.Generics
+import GHC.Generics hiding (S1)
 
 -- * Anonymous sum types
 
