@@ -17,6 +17,8 @@ import GHC.Generics
 
 -- * Anonymous sum types
 
+data S1 a = S1a a deriving (Eq, Ord, Read, Show, Generic, Typeable)
+
 data S2 a b = S2a a | S2b b deriving (Eq, Ord, Read, Show, Generic, Typeable)
 
 data S3 a b c = S3a a | S3b b | S3c c deriving (Eq, Ord, Read, Show, Generic, Typeable)
@@ -46,6 +48,12 @@ data S14 a b c d e f g h i j k l m n = S14a a | S14b b | S14c c | S14d d | S14e 
 data S15 a b c d e f g h i j k l m n o = S15a a | S15b b | S15c c | S15d d | S15e e | S15f f | S15g g | S15h h | S15i i | S15j j | S15k k | S15l l | S15m m | S15n n | S15o o deriving (Eq, Ord, Read, Show, Generic)
 
 -- * Partitioning
+
+partitionS1 :: [S1 a] -> ([a])
+partitionS1 = foldr fn ([])
+  where
+    fn it (as) = case it of
+      S1a a -> (a:as)
 
 partitionS2 :: [S2 a b] -> ([a], [b])
 partitionS2 = foldr fn ([], [])
@@ -238,6 +246,10 @@ partitionS15 = foldr fn ([], [], [], [], [], [], [], [], [], [], [], [], [], [],
 
 -- * Case analysis
 
+caseS1 :: (a -> z) -> S1 a -> z
+caseS1 fa s1 = case s1 of
+  S1a a -> fa a
+
 caseS2 :: (a -> z) -> (b -> z) -> S2 a b -> z
 caseS2 fa fb s2 = case s2 of
   S2a a -> fa a
@@ -401,6 +413,9 @@ caseS15 fa fb fc fd fe ff fg fh fi fj fk fl fm fn fo s15 = case s15 of
 
 -- * Mapping
 
+mapS1 :: (a -> a1) -> S1 a -> S1 a1
+mapS1 a = caseS1 (S1a . a)
+
 mapS2 :: (a -> a1) -> (b -> b1) -> S2 a b -> S2 a1 b1
 mapS2 a b = caseS2 (S2a . a) (S2b . b)
 
@@ -444,6 +459,10 @@ mapS15 :: (a -> a1) -> (b -> b1) -> (c -> c1) -> (d -> d1) -> (e -> e1) -> (f ->
 mapS15 a b c d e f g h i j k l m n o = caseS15 (S15a . a) (S15b . b) (S15c . c) (S15d . d) (S15e . e) (S15f . f) (S15g . g) (S15h . h) (S15i . i) (S15j . j) (S15k . k) (S15l . l) (S15m . m) (S15n . n) (S15o . o)
 
 -- * Mapping in a Functor
+
+mapS1f :: Functor ftr =>
+  (a -> ftr a1) -> S1 a -> ftr (S1 a1)
+mapS1f a = caseS1 (fmap S1a . a)
 
 mapS2f :: Functor ftr =>
   (a -> ftr a1) -> (b -> ftr b1) -> S2 a b -> ftr (S2 a1 b1)

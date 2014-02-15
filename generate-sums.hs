@@ -177,7 +177,7 @@ makeModule n i =
     mapFs = "-- * Mapping in a Functor\n\n"
       ++ concatMap mapDefA vs
 
-    vs = [2..i]
+    vs = [1..i]
 
 usage
   :: String
