@@ -15,6 +15,7 @@ module Data.Sums where
 
 import Data.Typeable
 import GHC.Generics hiding (S1)
+import Control.Exception
 
 -- * Anonymous sum types
 
@@ -24,20 +25,28 @@ instance Eq S0 where _ == _ = undefined
 instance Ord S0 where compare _ _ = undefined
 instance Read S0 where readsPrec _ = undefined
 instance Show S0 where show _ = undefined
+instance Exception S0
 
 data S1 a = S1a a deriving (Eq, Ord, Read, Show, Generic, Typeable)
+instance (Typeable a, Show a) => Exception (S1 a)
 
 data S2 a b = S2a a | S2b b deriving (Eq, Ord, Read, Show, Generic, Typeable)
+instance (Typeable a, Show a, Typeable b, Show b) => Exception (S2 a b)
 
 data S3 a b c = S3a a | S3b b | S3c c deriving (Eq, Ord, Read, Show, Generic, Typeable)
+instance (Typeable a, Show a, Typeable b, Show b, Typeable c, Show c) => Exception (S3 a b c)
 
 data S4 a b c d = S4a a | S4b b | S4c c | S4d d deriving (Eq, Ord, Read, Show, Generic, Typeable)
+instance (Typeable a, Show a, Typeable b, Show b, Typeable c, Show c, Typeable d, Show d) => Exception (S4 a b c d)
 
 data S5 a b c d e = S5a a | S5b b | S5c c | S5d d | S5e e deriving (Eq, Ord, Read, Show, Generic, Typeable)
+instance (Typeable a, Show a, Typeable b, Show b, Typeable c, Show c, Typeable d, Show d, Typeable e, Show e) => Exception (S5 a b c d e)
 
 data S6 a b c d e f = S6a a | S6b b | S6c c | S6d d | S6e e | S6f f deriving (Eq, Ord, Read, Show, Generic, Typeable)
+instance (Typeable a, Show a, Typeable b, Show b, Typeable c, Show c, Typeable d, Show d, Typeable e, Show e, Typeable f, Show f) => Exception (S6 a b c d e f)
 
 data S7 a b c d e f g = S7a a | S7b b | S7c c | S7d d | S7e e | S7f f | S7g g deriving (Eq, Ord, Read, Show, Generic, Typeable)
+instance (Typeable a, Show a, Typeable b, Show b, Typeable c, Show c, Typeable d, Show d, Typeable e, Show e, Typeable f, Show f, Typeable g, Show g) => Exception (S7 a b c d e f g)
 
 data S8 a b c d e f g h = S8a a | S8b b | S8c c | S8d d | S8e e | S8f f | S8g g | S8h h deriving (Eq, Ord, Read, Show, Generic)
 

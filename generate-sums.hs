@@ -21,6 +21,7 @@ dataDeclaration0 = unlines
   , "instance Ord S0 where compare _ _ = undefined"
   , "instance Read S0 where readsPrec _ = undefined"
   , "instance Show S0 where show _ = undefined"
+  , "instance Exception S0"
   , ""
   ]
 
@@ -34,12 +35,27 @@ dataDeclarationN i =
   ++ constructors
   ++ " deriving (Eq, Ord, Read, Show, Generic"
   ++ (if i <= 7 then ", Typeable)" else ")")
-  ++ "\n\n"
+  ++ "\n"
+  ++ exceptionInstance i
   where
     constructors = list " | " . map mkConst
       $ ls
     mkConst l = 'S' : show i ++ l : ' ' : l : []
     ls = letters i
+
+exceptionInstance :: Int -> String
+exceptionInstance i
+  | i > 7 = "\n"
+  | otherwise = "instance " ++ constraint
+    ++ "Exception (" ++ sType i ++ ")\n\n"
+  where
+    constraint
+      | i == 0 = ""
+      | otherwise = "(" ++ list ", " ls ++ ") => "
+      where
+        ls = map constrain . letters $ i
+        constrain c = "Typeable " ++ s ++ ", Show " ++ s
+          where s = [c]
 
 letter :: Int -> Char
 letter i = toEnum (97 + i)
@@ -47,7 +63,8 @@ letter i = toEnum (97 + i)
 sType :: Int -> String
 sType i = 'S' : show i ++ types
   where
-    types = " " ++ intersperse ' ' ls
+    types | i == 0 = ""
+          | otherwise = " " ++ intersperse ' ' ls
     ls = letters i
 
 letters :: Int -> [Char]
@@ -228,6 +245,7 @@ makeModule n i =
     imports = unlines
       [ "import Data.Typeable"
       , "import GHC.Generics hiding (S1)"
+      , "import Control.Exception"
       , ""
       ]
 
