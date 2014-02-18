@@ -1,3 +1,9 @@
+Version 0.4.0.0
+
+* Added Exception instances (requires major version bump)
+
+* Added S0
+
 Version 0.2.2.0
 
-* added S1
+* added S1.  Still debating whether and how to add S0.
