@@ -1,7 +1,7 @@
 This package was tested to work with these dependency
 versions and compiler version.
 These are the default versions fetched by cabal install.
-Tested as of: 2014-02-24 01:41:34.216927 UTC
+Tested as of: 2014-02-24 01:43:56.129945 UTC
 Path to compiler: ghc-7.6
 Compiler description: 7.6
 
@@ -32,6 +32,6 @@ Compiler description: 7.6
     time-1.4.0.1
     unix-2.6.0.1
 
-/home/massysett/anonymous-sums/sunlight-11527/db:
-    anonymous-sums-0.3.0.0
+/home/massysett/anonymous-sums/sunlight-11995/db:
+    anonymous-sums-0.4.0.0
 
