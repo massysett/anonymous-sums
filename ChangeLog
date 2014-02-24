@@ -4,6 +4,9 @@ Version 0.4.0.0
 
 * Added S0
 
+* Removed Generics instances; including them makes compatibility
+  with GHC 7.4 more difficult.  (requires major version bump)
+
 Version 0.2.2.0
 
 * added S1.  Still debating whether and how to add S0.

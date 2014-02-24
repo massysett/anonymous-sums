@@ -9,7 +9,7 @@ dist : Data/Sums.hs
 	runhaskell Setup configure 
 	runhaskell Setup sdist
 
-test : Data/Sums.hs
+test : Data/Sums.hs sunlight-test.hs
 	runghc sunlight-test.hs
 
 .PHONY: clean

@@ -15,7 +15,7 @@ dataDeclaration i
 
 dataDeclaration0 :: String
 dataDeclaration0 = unlines
-  [ "data S0 deriving (Generic, Typeable)"
+  [ "data S0 deriving Typeable"
   , ""
   , "instance Eq S0 where _ == _ = undefined"
   , "instance Ord S0 where compare _ _ = undefined"
@@ -33,7 +33,7 @@ dataDeclarationN
 dataDeclarationN i =
   "data " ++ sType i ++ " = "
   ++ constructors
-  ++ " deriving (Eq, Ord, Read, Show, Generic"
+  ++ " deriving (Eq, Ord, Read, Show"
   ++ (if i <= 7 then ", Typeable)" else ")")
   ++ "\n"
   ++ exceptionInstance i
@@ -221,7 +221,7 @@ makeModule n i =
   ++ cases ++ maps ++ mapFs
   where
 
-    pragmas = "{-# LANGUAGE DeriveDataTypeable, DeriveGeneric #-}\n"
+    pragmas = "{-# LANGUAGE DeriveDataTypeable #-}\n"
       ++ "{-# LANGUAGE EmptyDataDecls #-}\n\n"
 
     notice = unlines
@@ -244,7 +244,6 @@ makeModule n i =
 
     imports = unlines
       [ "import Data.Typeable"
-      , "import GHC.Generics hiding (S1)"
       , "import Control.Exception"
       , ""
       ]
