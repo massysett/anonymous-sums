@@ -27,4 +27,5 @@ library
     , anonymous-sums ==0.4.0.0
     , QuickCheck >= 2.7
   default-language: Haskell2010
+  ghc-options: -Wall
 
