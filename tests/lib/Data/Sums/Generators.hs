@@ -1,3 +1,13 @@
+-- | Each of the function in this module takes one pair for each type
+-- in the sum.  The first element of the pair is an 'Int' indicating
+-- the frequency with which constructors of this type are generated;
+-- this 'Int' should be non-negative.  The second element of the pair
+-- is the generator used for elements of this type.  For example, to
+-- generate 'Int's about a fourth of the time and 'Char's about three
+-- fourths of the time:
+--
+-- > genS2 :: Gen (S2 Int Char)
+-- > genS2 = s2 (1, arbitrary) (3, arbitrary)
 module Data.Sums.Generators where
 
 import Data.Sums
