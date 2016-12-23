@@ -10,3 +10,7 @@ Version 0.4.0.0
 Version 0.2.2.0
 
 * added S1.  Still debating whether and how to add S0.
+
+Version 0.6.0.0
+
+* Completely changed types and module names, and added Prisms

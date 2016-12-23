@@ -31,40 +31,52 @@ prismSig :: Int -> Int -> T.DecQ
 prismSig nCtors thisCtor = T.sigD name ty
   where
     name = T.mkName ("_S" ++ show nCtors ++ "_" ++ show thisCtor)
-    ty = [t| Lens.Prism' $(sumTy) $(fieldTy) |]
-    sumTy = foldl' T.appT start tys
+    ty = [t| Lens.Prism $(big) $(big') $(little) $(little') |]
+    var = T.varT . T.mkName
+    little = var ("t" ++ show thisCtor)
+    little' = var ("t" ++ show thisCtor ++ "'")
+    mkTypes maker = foldl' T.appT start tys
       where
         start = T.conT (T.mkName ("S" ++ show nCtors))
-        tys = map mkTy [1..nCtors]
-          where
-            mkTy n = T.varT (T.mkName ("t" ++ show n))
-    fieldTy = T.varT (T.mkName ("t" ++ show thisCtor))
+        tys = map maker [1..nCtors]
+    big = mkTypes (\n -> var ("t" ++ show n))
+    big' = mkTypes f
+      where
+        f n
+          | n /= thisCtor = var ("t" ++ show n)
+          | otherwise = var ("t" ++ show n ++ "'")
+
 
 -- | Given the number of constructors and the particular constructor
 -- number, return the prism itself.
 prismDecl :: Int -> Int -> T.DecQ
 prismDecl nCtors thisCtor = T.valD prismPat prismBody []
   where
+    otherCtorName n = T.mkName ("S" ++ show nCtors ++ "_" ++ show n)
+    thisCtorName = otherCtorName thisCtor
     prismPat = T.varP (T.mkName ("_S" ++ show nCtors ++ "_" ++ show thisCtor))
     prismBody = T.normalB expn
       where
-        expn = [| Lens.prism' $(make) $(decon) |]
+        expn = [| Lens.prism $(make) $(decon) |]
           where
             make = T.conE thisCtorName
             decon = do
               x <- T.newName "x"
               let caseExpn = T.caseE (T.varE x) matches
               T.lam1E (T.varP x) caseExpn
-    matches
-      | nCtors == 1 = [found]
-      | otherwise = [found, notFound]
-    thisCtorName = T.mkName ("S" ++ show nCtors ++ "_" ++ show thisCtor)
+    matches = found : notFounds
     found = do
       x <- T.newName "x"
       let pat = T.conP thisCtorName [T.varP x]
-          body = T.normalB [| Just $(T.varE x) |]
+          body = T.normalB [| Right $(T.varE x) |]
       T.match pat body []
-    notFound = T.match T.wildP (T.normalB [| Nothing |]) []
+    notFounds = map mkNotFound . filter (/= thisCtor) $ [1..nCtors]
+    mkNotFound i = do
+      x <- T.newName "x"
+      let pat = T.conP (otherCtorName i) [T.varP x]
+          body = T.normalB
+            [| Left $ $(T.conE (otherCtorName i)) $(T.varE x) |]
+      T.match pat body []
 
 -- | Given the number of ctors and this ctor number, return a
 -- signature and the prism itself.
